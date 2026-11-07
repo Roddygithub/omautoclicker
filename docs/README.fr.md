@@ -44,7 +44,7 @@ bin/install
 `bin/install` copie uniquement les fichiers du plugin dans
 `~/.config/omarchy/plugins/roddy.omautocliker`, puis l’active à droite dans la
 barre. Lors d’une mise à jour, il arrête/désactive le plugin et sauvegarde
-l’ancienne version sous `~/.local/state/omautocliker/backups/`. Il n’installe
+l’ancienne version sous `~/.local/state/omautocliker/backups/`. Une mise à jour locale redémarre le shell pour vider le cache QML. Il n’installe
 aucun paquet, ne change aucune permission et n’ajoute aucun raccourci.
 
 ### Préparer ydotoold

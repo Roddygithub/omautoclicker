@@ -63,8 +63,8 @@ same `YDOTOOL_SOCKET` to the daemon and the Omarchy shell.
 From a checkout, `bin/doctor` checks connectivity using button `0x00`, which
 sends no button press or release. `bin/install` is a local-development installer:
 it backs up an existing plugin under `~/.local/state/omautocliker/backups`, copies
-the QML files and enables the bar entry. After editing QML, restart the shell if
-it still displays cached code. The normal marketplace installation uses the
+the QML files and enables the bar entry. Updating an existing local copy
+restarts the Omarchy shell to clear cached QML (other applications remain open). The normal marketplace installation uses the
 `omarchy plugin add` command above.
 
 ## Global shortcuts
