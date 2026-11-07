@@ -158,7 +158,7 @@ Panel {
                     width: parent.width
                     spacing: Style.space(10)
                     enabled: root.service && !root.service.active
-                    Label { text: strings.t("button"); color: root.muted; font.pixelSize: Style.font.bodySmall }
+                    Label { width: parent.width; text: strings.t("button"); color: root.muted; font.pixelSize: Style.font.bodySmall }
                     RowLayout {
                         width: parent.width
                         spacing: Style.space(6)
