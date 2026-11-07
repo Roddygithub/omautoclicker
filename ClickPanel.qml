@@ -31,6 +31,7 @@ Panel {
         textFormat: Text.PlainText
         wrapMode: Text.Wrap
         horizontalAlignment: Commons.I18n.rightToLeft ? Text.AlignRight : Text.AlignLeft
+        LayoutMirroring.enabled: false
         color: root.barForeground
         font.family: Style.font.family
         font.pixelSize: Style.font.body

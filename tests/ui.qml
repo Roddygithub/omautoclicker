@@ -60,6 +60,8 @@ ShellRoot {
                 stage = 1;
             } else if (stage === 1) {
                 var expected = expectedStrings.t("rate");
+                var alignment = Commons.I18n.rightToLeft ? Text.AlignRight : Text.AlignLeft;
+                if (findContent(panel, [], "rateHeading").effectiveHorizontalAlignment !== alignment) { console.error("FAIL: text direction"); Qt.quit(); return; }
                 if (Commons.I18n.language !== Quickshell.env("OMAUTOC_TEST_LANG")) { console.error("FAIL: automatic language selection"); Qt.quit(); return; }
                 if (findContent(panel, [], "rateHeading").text !== expected) { console.error("FAIL: selected language"); Qt.quit(); return; }
                 findContent(panel, [], "ratePreset50").clicked();
