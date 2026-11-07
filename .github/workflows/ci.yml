@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate and test (Arch / Wayland)
+    runs-on: ubuntu-latest
+    container: archlinux:base
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Install test dependencies
+        run: |
+          pacman -Syu --noconfirm --needed git nodejs jq shellcheck python quickshell qt6-svg sway dbus ttf-dejavu noto-fonts noto-fonts-cjk
+          # Headless Sway needs no realtime capability (unavailable in containers).
+          setcap -r /usr/bin/sway
+      - name: Fetch the pinned Omarchy runtime
+        run: |
+          git init /tmp/omarchy
+          git -C /tmp/omarchy remote add origin https://github.com/omacom/omarchy.git
+          git -C /tmp/omarchy fetch --depth 1 origin e6d5a173006414424f0067abfa29030ee8ac11fc
+          git -C /tmp/omarchy checkout --detach FETCH_HEAD
+      - name: Check scripts and Python syntax
+        run: |
+          shellcheck bin/* tests/fake-ydotool tests/ci-wayland
+          python -m py_compile tests/live.py
+      - name: Run service and 50-language UI tests without physical input
+        run: |
+          useradd --create-home ci
+          chown -R ci:ci "$GITHUB_WORKSPACE"
+          runuser -u ci -- env OMARCHY_PATH=/tmp/omarchy bash tests/ci-wayland
+      - name: Save UI previews for every language
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: language-previews
+          path: ci-previews/*.png
+          if-no-files-found: ignore

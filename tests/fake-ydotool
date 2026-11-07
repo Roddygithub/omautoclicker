@@ -1,0 +1,7 @@
+#!/bin/sh
+[ "$*" = 'click --next-delay 0 0xC0' ] || exit 2
+case "$(cat "$OMAUTOC_TEST_MODE")" in
+  fail) echo 'test socket unavailable' >&2; exit 1 ;;
+  slow) sleep 0.15 ;;
+esac
+printf 'click\n' >> "$OMAUTOC_TEST_LOG"

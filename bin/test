@@ -1,0 +1,49 @@
+#!/bin/bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+node tests/model.cjs
+omarchy_path="${OMARCHY_PATH:-/usr/share/omarchy}"
+bash "$omarchy_path/bin/omarchy-plugin-validate" .
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+mkdir -p "$tmp/config" "$tmp/runtime"
+chmod 700 "$tmp/runtime"
+cp Service.qml Model.js BarWidget.qml MouseMark.qml ClickPanel.qml "$tmp/"
+cp -r i18n "$tmp/"
+cp tests/runner.qml "$tmp/shell.qml"
+ln -s "${OMARCHY_PATH:-/usr/share/omarchy}/shell/Commons" "$tmp/Commons"
+ln -s "${OMARCHY_PATH:-/usr/share/omarchy}/shell/Ui" "$tmp/Ui"
+printf 'slow\n' > "$tmp/mode"
+export OMAUTOC_TEST_EXEC="$PWD/tests/fake-ydotool" OMAUTOC_TEST_MODE="$tmp/mode" OMAUTOC_TEST_LOG="$tmp/clicks"
+env -u WAYLAND_DISPLAY QT_QPA_PLATFORM=offscreen XDG_CONFIG_HOME="$tmp/config" XDG_RUNTIME_DIR="$tmp/runtime" \
+  timeout 18 qs -p "$tmp/shell.qml" --no-color > "$tmp/output" 2>&1 || { cat "$tmp/output"; exit 1; }
+cat "$tmp/output"
+grep -q 'SERVICE TESTS PASS' "$tmp/output"
+if grep -Eq 'FAIL:|WARN scene:|ERROR' "$tmp/output"; then exit 1; fi
+
+grep -q 'intervalMs=10' "$tmp/config/omautocliker.ini"
+# A real Wayland backend is needed for Omarchy's layer-shell panels.
+if [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
+  cp tests/ui.qml "$tmp/shell.qml"
+  mkdir -p "$tmp/config/omarchy"
+  languages="${OMAUTOC_TEST_LANG:-fr}"
+  if [[ "$languages" == all ]]; then
+    languages=$(jq -r 'keys[]' "$omarchy_path/default/i18n/locales.json")
+  fi
+  for language in $languages; do
+    printf '%s\n' "$language" > "$tmp/config/omarchy/language"
+    screenshot="${OMAUTOC_SCREENSHOT:-}"
+    if [[ -n "${OMAUTOC_CAPTURE_DIR:-}" ]]; then
+      mkdir -p "$OMAUTOC_CAPTURE_DIR"
+      screenshot="$OMAUTOC_CAPTURE_DIR/$language.png"
+    fi
+    QT_QPA_PLATFORM=wayland XDG_CONFIG_HOME="$tmp/config" OMAUTOC_TEST_LANG="$language" OMAUTOC_SCREENSHOT="$screenshot" \
+      timeout 8 qs -p "$tmp/shell.qml" --no-color > "$tmp/ui-output" 2>&1 || { cat "$tmp/ui-output"; exit 1; }
+    grep -q 'UI TESTS PASS' "$tmp/ui-output" || { cat "$tmp/ui-output"; exit 1; }
+    if grep -Eq 'FAIL:|WARN scene:|ERROR|TypeError|ReferenceError|Unable to assign' "$tmp/ui-output"; then cat "$tmp/ui-output"; exit 1; fi
+    if [[ -n "$screenshot" && ! -s "$screenshot" ]]; then echo "Missing screenshot: $screenshot" >&2; exit 1; fi
+    printf 'UI [%s]: PASS\n' "$language"
+  done
+else
+  echo 'UI checks skipped: run WAYLAND_DISPLAY=<socket> bin/test inside a Wayland session.'
+fi

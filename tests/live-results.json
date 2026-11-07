@@ -1,0 +1,82 @@
+{
+  "at": "2026-11-07T13:25:25.853819+00:00",
+  "tests": [
+    {
+      "name": "left",
+      "passed": true,
+      "presses": {
+        "left": 5,
+        "right": 0,
+        "middle": 0
+      },
+      "releases": {
+        "left": 5,
+        "right": 0,
+        "middle": 0
+      }
+    },
+    {
+      "name": "right",
+      "passed": true,
+      "presses": {
+        "left": 0,
+        "right": 5,
+        "middle": 0
+      },
+      "releases": {
+        "left": 0,
+        "right": 5,
+        "middle": 0
+      }
+    },
+    {
+      "name": "middle",
+      "passed": true,
+      "presses": {
+        "left": 0,
+        "right": 0,
+        "middle": 5
+      },
+      "releases": {
+        "left": 0,
+        "right": 0,
+        "middle": 5
+      }
+    },
+    {
+      "name": "cancel_countdown",
+      "passed": true,
+      "clicks": 0
+    },
+    {
+      "name": "F8_start_F9_stop",
+      "passed": true,
+      "clicks": 3
+    },
+    {
+      "name": "disable_reenable_no_resume",
+      "passed": true,
+      "clicks": 3,
+      "settings_preserved": true
+    },
+    {
+      "name": "shell_restart_no_resume",
+      "passed": true,
+      "clicks": 2,
+      "settings_preserved": true
+    }
+  ],
+  "restart_command_warning": "Omarchy shell restarted, but its notification service did not become ready.",
+  "passed": true,
+  "final_state": {
+    "phase": "idle",
+    "count": 0,
+    "remaining": 0,
+    "intervalMs": 100,
+    "button": "left",
+    "limit": 0,
+    "delaySeconds": 3,
+    "error": "",
+    "diagnostic": ""
+  }
+}

@@ -1,0 +1,26 @@
+#!/bin/bash
+set -euo pipefail
+root=$(cd "$(dirname "$0")/.." && pwd)
+id=roddy.omautocliker
+dest="$HOME/.config/omarchy/plugins/$id"
+omarchy plugin validate "$root"
+if [[ -d "$dest" ]]; then
+  backup="${XDG_STATE_HOME:-$HOME/.local/state}/omautocliker/backups/$(date +%Y%m%d-%H%M%S)"
+  mkdir -p "$(dirname "$backup")"
+  cp -a "$dest" "$backup"
+  omarchy-shell omautocliker stop || true
+  omarchy plugin disable "$id"
+fi
+mkdir -p "$dest/i18n"
+install -m644 "$root/manifest.json" "$root/Service.qml" "$root/BarWidget.qml" \
+  "$root/MouseMark.qml" "$root/ClickPanel.qml" "$root/Model.js" "$root/LICENSE" "$root/README.md" "$dest/"
+install -m644 "$root"/i18n/*.json "$dest/i18n/"
+omarchy plugin validate "$dest"
+omarchy-shell shell rescanPlugins
+# Discovery is asynchronous; wait until the new manifest is visible.
+for ((attempt = 0; attempt < 40; attempt++)); do
+  if omarchy plugin list --json | jq -e --arg id "$id" 'any(.[]; .id == $id)' >/dev/null; then break; fi
+  sleep 0.1
+done
+omarchy plugin enable "$id" --section right
+printf 'Installed %s. Run bin/doctor, then configure the F8/F9 bindings in README.md.\n' "$id"

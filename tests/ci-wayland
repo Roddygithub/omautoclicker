@@ -1,0 +1,21 @@
+#!/bin/bash
+# Isolated headless Wayland compositor; no desktop or input devices are used.
+set -euo pipefail
+runtime=$(mktemp -d)
+export XDG_RUNTIME_DIR="$runtime"
+export WLR_BACKENDS=headless WLR_LIBINPUT_NO_DEVICES=1 WLR_RENDERER=pixman
+export QT_QUICK_BACKEND=software
+printf 'output HEADLESS-1 resolution 1280x900\n' > "$runtime/sway.conf"
+sway -c "$runtime/sway.conf" > "$runtime/sway.log" 2>&1 &
+compositor=$!
+trap 'kill "$compositor" 2>/dev/null || true; rm -rf "$runtime"' EXIT
+for ((attempt = 0; attempt < 60; attempt++)); do
+  socket=$(find "$runtime" -maxdepth 1 -type s -name 'wayland-*' -print -quit)
+  [[ -n "$socket" ]] && break
+  if ! kill -0 "$compositor" 2>/dev/null; then cat "$runtime/sway.log"; exit 1; fi
+  sleep .1
+done
+[[ -n "$socket" ]] || { cat "$runtime/sway.log"; exit 1; }
+export WAYLAND_DISPLAY="${socket##*/}"
+export OMAUTOC_CAPTURE_DIR="$PWD/ci-previews"
+OMAUTOC_TEST_LANG=all bin/test

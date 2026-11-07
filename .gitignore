@@ -1,0 +1,6 @@
+*.qmlc
+*.log
+__pycache__/
+assets/captures/
+assets/preview-en.png
+ci-previews/

@@ -1,0 +1,10 @@
+#!/bin/bash
+set -euo pipefail
+command -v omarchy >/dev/null || { echo 'Omarchy is missing.' >&2; exit 1; }
+command -v ydotool >/dev/null || { echo 'ydotool is missing: omarchy pkg add ydotool' >&2; exit 1; }
+# Button 0 without the down/up masks sends no mouse input.
+timeout 3 ydotool click --next-delay 0 0x00 >/dev/null || {
+  echo 'Cannot reach ydotoold. Check its service, /dev/uinput access and YDOTOOL_SOCKET. See README.md.' >&2
+  exit 1
+}
+echo 'ydotoold is reachable. No clicks were sent.'

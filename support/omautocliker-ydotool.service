@@ -1,0 +1,11 @@
+[Unit]
+Description=ydotool input daemon for Omautocliker
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/ydotoold --socket-path=%t/.ydotool_socket --socket-perm=0600
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target
