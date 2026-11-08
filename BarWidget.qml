@@ -25,7 +25,8 @@ Ui.BarWidget {
         fixedWidth: Style.bar.iconSlot
         MouseMark {
             anchors.centerIn: parent
-            width: Style.bar.iconSize; height: width
+            width: Math.min(Style.bar.iconCanvas, Style.bar.iconSize + Style.space(2)); height: width
+            compact: true
             ink: root.service && root.service.active ? Commons.Color.accent : button.foreground
             active: root.service && root.service.active
         }
