@@ -26,7 +26,6 @@ Ui.BarWidget {
         MouseMark {
             anchors.centerIn: parent
             width: Math.min(Style.bar.iconCanvas, Style.bar.iconSize + Style.space(2)); height: width
-            compact: true
             ink: root.service && root.service.active ? Commons.Color.accent : button.foreground
             active: root.service && root.service.active
         }
