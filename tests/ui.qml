@@ -12,7 +12,7 @@ ShellRoot {
     function findContent(object, seen, name) {
         if (!object || seen.indexOf(object) !== -1) return null;
         seen.push(object);
-        if (object.objectName === (name || "omautocliker-panel-content")) return object;
+        if (object.objectName === (name || "omautoclicker-panel-content")) return object;
         var lists = [object.children, object.data, object.contentItem];
         for (var i = 0; i < lists.length; i++) {
             var list = lists[i];

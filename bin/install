@@ -1,16 +1,16 @@
 #!/bin/bash
 set -euo pipefail
 root=$(cd "$(dirname "$0")/.." && pwd)
-id=roddy.omautocliker
+id=roddy.omautoclicker
 dest="$HOME/.config/omarchy/plugins/$id"
 omarchy plugin validate "$root"
 updating=false
 if [[ -d "$dest" ]]; then
   updating=true
-  backup="${XDG_STATE_HOME:-$HOME/.local/state}/omautocliker/backups/$(date +%Y%m%d-%H%M%S)"
+  backup="${XDG_STATE_HOME:-$HOME/.local/state}/omautoclicker/backups/$(date +%Y%m%d-%H%M%S)"
   mkdir -p "$(dirname "$backup")"
   cp -a "$dest" "$backup"
-  omarchy-shell omautocliker stop || true
+  omarchy-shell omautoclicker stop || true
 fi
 mkdir -p "$dest/i18n"
 install -m644 "$root/manifest.json" "$root/Service.qml" "$root/BarWidget.qml" \

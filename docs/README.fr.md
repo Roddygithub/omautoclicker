@@ -1,6 +1,6 @@
-# Omautocliker
+# Omautoclicker
 
-![Panneau Omautocliker en français](../assets/preview.png)
+![Panneau Omautoclicker en français](../assets/preview.png)
 
 Un autoclicker pour **Omarchy Quattro / Hyprland / Wayland**, intégré à la barre.
 Code neuf en QML/JavaScript, sous licence MIT ; `ydotool` reste un programme
@@ -16,7 +16,7 @@ externe, sous sa propre licence. Aucun moteur tiers copié, aucune compilation.
 - Un seul service pour tous les écrans, icône de souris avec point d’activité dans la barre.
 - Ouvrir le panneau arrête les clics ; clic droit sur l’icône = arrêt.
 - Interface traduite dans les 50 langues proposées par Omarchy, sélection automatique et mise en page de droite à gauche.
-- Cadence en grand, préréglages 20/10/4/1 clics par seconde et icône de souris.
+- Cadence en grand, préréglages 20/10/4/1 clics par seconde, intervalle saisi manuellement en secondes (0,01–3600) et icône de souris.
 
 Une seule commande de clic est en cours à la fois. Un moteur lent réduit la
 cadence au lieu d’accumuler les commandes : les CPS affichés sont un plafond,
@@ -42,9 +42,9 @@ bin/install
 ```
 
 `bin/install` copie uniquement les fichiers du plugin dans
-`~/.config/omarchy/plugins/roddy.omautocliker`, puis l’active à droite dans la
+`~/.config/omarchy/plugins/roddy.omautoclicker`, puis l’active à droite dans la
 barre. Lors d’une mise à jour, il arrête/désactive le plugin et sauvegarde
-l’ancienne version sous `~/.local/state/omautocliker/backups/`. Une mise à jour locale redémarre le shell pour vider le cache QML. Il n’installe
+l’ancienne version sous `~/.local/state/omautoclicker/backups/`. Une mise à jour locale redémarre le shell pour vider le cache QML. Il n’installe
 aucun paquet, ne change aucune permission et n’ajoute aucun raccourci.
 
 ### Préparer ydotoold
@@ -65,7 +65,7 @@ avec les droits administrateur :
 sudo groupadd -f uinput
 sudo usermod -aG uinput "$USER"
 printf '%s\n' 'KERNEL=="uinput", GROUP="uinput", MODE="0660", OPTIONS+="static_node=uinput"' \
-  | sudo tee /etc/udev/rules.d/80-omautocliker-uinput.rules
+  | sudo tee /etc/udev/rules.d/80-omautoclicker-uinput.rules
 sudo modprobe uinput
 sudo udevadm control --reload-rules
 sudo udevadm trigger --subsystem-match=misc --sysname-match=uinput
@@ -96,14 +96,14 @@ signature valide de T.J. Townsend, clé
 n’est pas enregistrée dans pacman ; une future mise à jour doit remplacer ces
 deux binaires, ou passer à l’installation système.
 
-Le service `omautocliker-ydotool.service` est activé dans systemd utilisateur
+Le service `omautoclicker-ydotool.service` est activé dans systemd utilisateur
 (modèle dans `support/`). Il démarre à la connexion, utilise le socket
 `/run/user/1000/.ydotool_socket` en mode `0600`, et profite de l’ACL existante
 sur `/dev/uinput`. Aucun groupe ni aucune règle udev n’a été modifié.
 
 ```sh
-systemctl --user status omautocliker-ydotool.service
-systemctl --user restart omautocliker-ydotool.service
+systemctl --user status omautoclicker-ydotool.service
+systemctl --user restart omautoclicker-ydotool.service
 ```
 
 Pour retirer cette installation spécifique : désactiver ce service, supprimer
@@ -116,8 +116,8 @@ Ajouter dans `~/.config/hypr/bindings.lua`, après avoir vérifié que F8/F9
 ne sont pas déjà utilisés (`omarchy menu keybindings --print`) :
 
 ```lua
-o.bind("F8", "Omautocliker démarrer/arrêter", "omarchy-shell omautocliker toggle")
-o.bind("F9", "Omautocliker arrêt", "omarchy-shell omautocliker stop", { locked = true, ignore_mods = true })
+o.bind("F8", "Omautoclicker démarrer/arrêter", "omarchy-shell omautoclicker toggle")
+o.bind("F9", "Omautoclicker arrêt", "omarchy-shell omautoclicker stop", { locked = true, ignore_mods = true })
 ```
 
 Puis `hyprctl reload` et `hyprctl configerrors`. F9 est l’arrêt explicite,
@@ -128,13 +128,13 @@ vérifier l’arrêt avant de lancer une séquence illimitée.
 ## Commandes
 
 ```sh
-omarchy-shell omautocliker status
-omarchy-shell omautocliker configure 100 left 20 3
-omarchy-shell omautocliker start
-omarchy-shell omautocliker stop
-omarchy-shell omautocliker toggle
-omarchy-shell shell summon roddy.omautocliker '{}'
-omarchy-shell shell hide roddy.omautocliker
+omarchy-shell omautoclicker status
+omarchy-shell omautoclicker configure 100 left 20 3
+omarchy-shell omautoclicker start
+omarchy-shell omautoclicker stop
+omarchy-shell omautoclicker toggle
+omarchy-shell shell summon roddy.omautoclicker '{}'
+omarchy-shell shell hide roddy.omautoclicker
 ```
 
 `configure` prend : intervalle en ms, `left|right|middle`, limite, délai en s.
@@ -143,7 +143,7 @@ Il refuse les valeurs invalides et les changements pendant une séquence.
 diagnostic stderr borné à 1 000 caractères. Le compteur représente les commandes
 réussies, sans pouvoir confirmer leur réception par l’application cible.
 
-Les préférences sont stockées dans `${XDG_CONFIG_HOME:-~/.config}/omautocliker.ini`.
+Les préférences sont stockées dans `${XDG_CONFIG_HOME:-~/.config}/omautoclicker.ini`.
 Ni réseau, ni télémétrie, ni téléchargement au fonctionnement du plugin.
 
 ## Tests et maintenance
@@ -190,12 +190,12 @@ ouvertes.
 ## Désinstallation
 
 ```sh
-omarchy-shell omautocliker stop
-omarchy plugin remove roddy.omautocliker
+omarchy-shell omautoclicker stop
+omarchy plugin remove roddy.omautoclicker
 ```
 
 Supprimer les deux lignes F8/F9 si elles ont été ajoutées, puis recharger
-Hyprland. Les préférences restent conservées ; supprimer `omautocliker.ini`
+Hyprland. Les préférences restent conservées ; supprimer `omautoclicker.ini`
 pour les effacer. Le paquet et le service `ydotool` restent installés pour les
 autres outils éventuels. Si le groupe et la règle udev ont été créés uniquement
 pour ce plugin, leur retrait est une opération administrateur séparée.
@@ -203,7 +203,7 @@ pour ce plugin, leur retrait est une opération administrateur séparée.
 ## Publication
 
 Le dépôt public contient le `manifest.json` attendu par le marketplace, version 0.1.0,
-ID `roddy.omautocliker`. Il n’est pas encore publié : avant de proposer son
+ID `roddy.omautoclicker`. Il n’est pas encore publié : avant de proposer son
 référencement, publier le dépôt GitHub, puis
 suivre le [guide de publication](https://plugins.omarchy.org/publish.html).
 

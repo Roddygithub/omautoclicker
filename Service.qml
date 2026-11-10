@@ -23,7 +23,7 @@ Item {
 
     Settings {
         id: preferences
-        location: "file://" + (Quickshell.env("XDG_CONFIG_HOME") || Quickshell.env("HOME") + "/.config") + "/omautocliker.ini"
+        location: "file://" + (Quickshell.env("XDG_CONFIG_HOME") || Quickshell.env("HOME") + "/.config") + "/omautoclicker.ini"
         property int intervalMs: 100
         property string button: "left"
         property int limit: 0
@@ -60,7 +60,7 @@ Item {
         args[0] = executable;
         // The shell also turns an absent executable into a normal exit 127.
         // Arguments remain separate; no user value is evaluated as shell code.
-        click.command = ["/bin/sh", "-c", 'exec "$@"', "omautocliker"].concat(args);
+        click.command = ["/bin/sh", "-c", 'exec "$@"', "omautoclicker"].concat(args);
         click.running = true;
     }
     function status() {
@@ -103,7 +103,7 @@ Item {
     }
     Component.onDestruction: stop()
     ShellIpc {
-        target: "omautocliker"
+        target: "omautoclicker"
         function toggle(): void { root.toggle(); }
         function stop(): void { root.stop(); }
         function start(): bool { return root.start(); }

@@ -15,7 +15,7 @@ def run(*args, check=True, timeout=8):
 
 
 def service(method, *args):
-    return run('omarchy-shell', 'omautocliker', method, *map(str, args))
+    return run('omarchy-shell', 'omautoclicker', method, *map(str, args))
 
 
 def state():
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     cursor = json.loads(run('hyprctl', '-j', 'cursorpos'))
     active = json.loads(run('hyprctl', '-j', 'activewindow')).get('address')
     report = {'at': datetime.now(timezone.utc).isoformat(), 'tests': []}
-    with tempfile.TemporaryDirectory(prefix='omautocliker-live-') as folder:
+    with tempfile.TemporaryDirectory(prefix='omautoclicker-live-') as folder:
         shell = str(Path(folder) / 'shell.qml')
         shutil.copy(Path(__file__).with_name('LiveTarget.qml'), shell)
         log = open(Path(folder) / 'output.log', 'w+')
@@ -107,14 +107,14 @@ if __name__ == '__main__':
             reset()
             service('start')
             wait_for(lambda: state()['count'] >= 2)
-            run('omarchy', 'plugin', 'disable', 'roddy.omautocliker')
+            run('omarchy', 'plugin', 'disable', 'roddy.omautoclicker')
             time.sleep(.4)
             stopped = received()
             time.sleep(.5)
             assert received()['presses'] == stopped['presses']
             assert stopped['presses'] == stopped['releases']
-            run('omarchy', 'plugin', 'enable', 'roddy.omautocliker', '--section', 'right')
-            wait_for(lambda: service('status') if run('omarchy-shell', 'omautocliker', 'status', check=False).startswith('{') else False)
+            run('omarchy', 'plugin', 'enable', 'roddy.omautoclicker', '--section', 'right')
+            wait_for(lambda: service('status') if run('omarchy-shell', 'omautoclicker', 'status', check=False).startswith('{') else False)
             assert state()['phase'] == 'idle'
             assert state()['intervalMs'] == 100 and state()['limit'] == 20
             time.sleep(.4)
@@ -127,7 +127,7 @@ if __name__ == '__main__':
             if restart.returncode:
                 report['restart_command_warning'] = (restart.stdout + restart.stderr).strip()
                 print('Restart command warning: ' + report['restart_command_warning'], flush=True)
-            wait_for(lambda: run('omarchy-shell', 'omautocliker', 'status', check=False).startswith('{'), seconds=12)
+            wait_for(lambda: run('omarchy-shell', 'omautoclicker', 'status', check=False).startswith('{'), seconds=12)
             assert state()['phase'] == 'idle' and state()['count'] == 0
             assert state()['intervalMs'] == 100 and state()['limit'] == 20
             stopped = received()
@@ -137,8 +137,8 @@ if __name__ == '__main__':
             passed('shell_restart_no_resume', clicks=stopped['presses']['left'], settings_preserved=True)
             report['passed'] = True
         finally:
-            run('omarchy', 'plugin', 'enable', 'roddy.omautocliker', '--section', 'right', check=False)
-            wait_for(lambda: run('omarchy-shell', 'omautocliker', 'status', check=False).startswith('{'), seconds=15)
+            run('omarchy', 'plugin', 'enable', 'roddy.omautoclicker', '--section', 'right', check=False)
+            wait_for(lambda: run('omarchy-shell', 'omautoclicker', 'status', check=False).startswith('{'), seconds=15)
             service('stop')
             time.sleep(.2)
             service('configure', original['intervalMs'], original['button'], original['limit'], original['delaySeconds'])

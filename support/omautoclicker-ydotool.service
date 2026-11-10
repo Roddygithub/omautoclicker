@@ -1,5 +1,5 @@
 [Unit]
-Description=ydotool input daemon for Omautocliker
+Description=ydotool input daemon for Omautoclicker
 
 [Service]
 Type=simple

@@ -21,7 +21,7 @@ cat "$tmp/output"
 grep -q 'SERVICE TESTS PASS' "$tmp/output"
 if grep -Eq 'FAIL:|WARN scene:|ERROR' "$tmp/output"; then exit 1; fi
 
-grep -q 'intervalMs=10' "$tmp/config/omautocliker.ini"
+grep -q 'intervalMs=10' "$tmp/config/omautoclicker.ini"
 # A real Wayland backend is needed for Omarchy's layer-shell panels.
 if [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
   cp tests/ui.qml "$tmp/shell.qml"

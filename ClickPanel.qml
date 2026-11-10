@@ -7,7 +7,7 @@ import qs.Commons as Commons
 
 Panel {
     id: root
-    moduleName: "roddy.omautocliker"
+    moduleName: "roddy.omautoclicker"
     manageIpc: false
     property var anchorItem: null
     property var hostWidget: null
@@ -60,6 +60,56 @@ Panel {
             onModified: function(value) { numeric.modified(value); }
         }
     }
+    // Manual interval in seconds with two decimals, so any timing can be typed
+    // (0.05 = 20 clicks/s, 2.5 = 0.4 clicks/s) instead of being limited to the
+    // presets. Internally the service still stores whole milliseconds.
+    component Timing: Column {
+        id: timing
+        property alias label: caption.text
+        property int value: 100
+        signal modified(int milliseconds)
+        function format() {
+            var seconds = (value / 1000).toFixed(2).replace(/\.?0+$/, "");
+            return Commons.I18n.rightToLeft ? seconds : seconds;
+        }
+        function refresh() { if (!field.activeFocus) field.text = format(); }
+        function commit() {
+            var parsed = Number(String(field.text || "").replace(",", "."));
+            if (!isFinite(parsed)) { refresh(); return; }
+            var ms = Math.min(3600000, Math.max(10, Math.round(parsed * 1000)));
+            field.text = (ms / 1000).toFixed(2).replace(/\.?0+$/, "");
+            if (ms !== value) timing.modified(ms);
+        }
+        onValueChanged: refresh()
+        Component.onCompleted: refresh()
+        spacing: Style.space(7)
+        Label {
+            id: caption
+            width: parent.width
+            color: root.muted
+            font.pixelSize: Style.font.bodySmall
+        }
+        Controls.TextField {
+            id: field
+            width: parent.width
+            horizontalAlignment: TextInput.AlignHCenter
+            font.family: Style.font.family
+            font.pixelSize: Style.font.body
+            color: root.barForeground
+            validator: DoubleValidator {
+                bottom: 0.01; top: 3600; decimals: 2
+                notation: DoubleValidator.StandardNotation
+            }
+            onEditingFinished: timing.commit()
+            onAccepted: timing.commit()
+            background: Rectangle {
+                radius: Style.cornerRadius
+                color: root.tint(0.06)
+                border.width: field.activeFocus ? 2 : 1
+                border.color: field.activeFocus ? root.accent : root.tint(0.28)
+            }
+        }
+    }
     KeyboardPanel {
         id: surface
         anchorItem: root.anchorItem
@@ -76,7 +126,7 @@ Panel {
             Keys.onEscapePressed: root.close()
             Column {
                 id: content
-                objectName: "omautocliker-panel-content"
+                objectName: "omautoclicker-panel-content"
                 width: parent.width
                 spacing: Style.space(18)
                 RowLayout {
@@ -125,13 +175,12 @@ Panel {
                                 }
                                 Label { Layout.fillWidth: true; Layout.minimumWidth: 0; text: strings.t("cpsUnit"); color: root.muted }
                             }
-                            Numeric {
+                            Timing {
                                 Layout.preferredWidth: Style.space(105)
-                                label: strings.t("interval").arg("ms")
-                                from: 10; to: 3600000; stepSize: 10
+                                label: strings.t("interval").arg("s")
                                 value: root.service ? root.service.intervalMs : 100
                                 enabled: root.service && !root.service.active
-                                onModified: function(v) { root.save(v, root.service.button, root.service.limit, root.service.delaySeconds); }
+                                onModified: function(ms) { root.save(ms, root.service.button, root.service.limit, root.service.delaySeconds); }
                             }
                         }
                         RowLayout {

@@ -14,7 +14,7 @@ ShellRoot {
     }
     FloatingWindow {
         id: window
-        title: "Omautocliker Live Test"
+        title: "Omautoclicker Live Test"
         visible: true
         implicitWidth: 900
         implicitHeight: 650
@@ -27,7 +27,7 @@ ShellRoot {
             color: "#ffffff"
             font.pixelSize: 26
             wrapMode: Text.WordWrap
-            text: "Omautocliker — test réel\n\nZone de clic sans action\n\nAppuis : " + JSON.stringify(root.presses)
+            text: "Omautoclicker — test réel\n\nZone de clic sans action\n\nAppuis : " + JSON.stringify(root.presses)
                 + "\nRelâchements : " + JSON.stringify(root.releases)
         }
         MouseArea {
@@ -43,7 +43,7 @@ ShellRoot {
     }
     Process {
         id: emergency
-        command: ["omarchy-shell", "omautocliker", "stop"]
+        command: ["omarchy-shell", "omautoclicker", "stop"]
     }
     IpcHandler {
         target: "liveTarget"

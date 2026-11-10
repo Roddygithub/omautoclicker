@@ -1,14 +1,14 @@
-# Omautocliker
+# Omautoclicker
 
-[![CI](https://github.com/Roddygithub/omautocliker/actions/workflows/ci.yml/badge.svg)](https://github.com/Roddygithub/omautocliker/actions/workflows/ci.yml)
+[![CI](https://github.com/Roddygithub/omautoclicker/actions/workflows/ci.yml/badge.svg)](https://github.com/Roddygithub/omautoclicker/actions/workflows/ci.yml)
 
-![Omautocliker panel](preview.png)
+![Omautoclicker panel](preview.png)
 
 A small native auto-clicker for **Omarchy Quattro / Hyprland / Wayland**.
 Built from scratch with QML and JavaScript; no compilation or bundled click engine.
 
 - Left, middle and right clicks at the current pointer position.
-- Adjustable interval, with 20/10/4/1 clicks-per-second presets.
+- Adjustable interval, with 20/10/4/1 clicks-per-second presets and a manual field in seconds (0.01–3600).
 - A finite click count, or unlimited with `0`.
 - A 1–10 second countdown before clicking (default: 3 seconds).
 - Saved preferences, a shared service across monitors and a themed bar icon.
@@ -24,7 +24,7 @@ The plugin runs as your user and never installs packages or changes permissions.
 
 ```sh
 omarchy pkg add ydotool
-omarchy plugin add https://github.com/Roddygithub/omautocliker.git --enable
+omarchy plugin add https://github.com/Roddygithub/omautoclicker.git --enable
 ```
 
 Prepare `ydotoold` before starting a click sequence:
@@ -48,7 +48,7 @@ dedicated group and udev rule (only do this if needed):
 sudo groupadd -f uinput
 sudo usermod -aG uinput "$USER"
 printf '%s\n' 'KERNEL=="uinput", GROUP="uinput", MODE="0660", OPTIONS+="static_node=uinput"' \
-  | sudo tee /etc/udev/rules.d/80-omautocliker-uinput.rules
+  | sudo tee /etc/udev/rules.d/80-omautoclicker-uinput.rules
 sudo modprobe uinput
 sudo udevadm control --reload-rules
 sudo udevadm trigger --subsystem-match=misc --sysname-match=uinput
@@ -62,7 +62,7 @@ same `YDOTOOL_SOCKET` to the daemon and the Omarchy shell.
 
 From a checkout, `bin/doctor` checks connectivity using button `0x00`, which
 sends no button press or release. `bin/install` is a local-development installer:
-it backs up an existing plugin under `~/.local/state/omautocliker/backups`, copies
+it backs up an existing plugin under `~/.local/state/omautoclicker/backups`, copies
 the QML files and enables the bar entry. Updating an existing local copy
 restarts the Omarchy shell to clear cached QML (other applications remain open). The normal marketplace installation uses the
 `omarchy plugin add` command above.
@@ -73,8 +73,8 @@ Check for existing F8/F9 bindings first (`omarchy menu keybindings --print`).
 Add these lines to `~/.config/hypr/bindings.lua` if the keys are available:
 
 ```lua
-o.bind("F8", "Omautocliker toggle", "omarchy-shell omautocliker toggle")
-o.bind("F9", "Omautocliker stop", "omarchy-shell omautocliker stop", { locked = true, ignore_mods = true })
+o.bind("F8", "Omautoclicker toggle", "omarchy-shell omautoclicker toggle")
+o.bind("F9", "Omautoclicker stop", "omarchy-shell omautoclicker stop", { locked = true, ignore_mods = true })
 ```
 
 Run `hyprctl reload` and `hyprctl configerrors`. F9 is an explicit stop, including
@@ -89,13 +89,13 @@ The countdown lets you position the pointer. Escape closes the panel. Tab moves
 through controls. Verify the stop shortcut before using unlimited mode.
 
 ```sh
-omarchy-shell omautocliker status
-omarchy-shell omautocliker configure 100 left 20 3
-omarchy-shell omautocliker start
-omarchy-shell omautocliker stop
-omarchy-shell omautocliker toggle
-omarchy-shell shell summon roddy.omautocliker '{}'
-omarchy-shell shell hide roddy.omautocliker
+omarchy-shell omautoclicker status
+omarchy-shell omautoclicker configure 100 left 20 3
+omarchy-shell omautoclicker start
+omarchy-shell omautoclicker stop
+omarchy-shell omautoclicker toggle
+omarchy-shell shell summon roddy.omautoclicker '{}'
+omarchy-shell shell hide roddy.omautoclicker
 ```
 
 `configure` takes interval in milliseconds (10–3,600,000), button
@@ -112,7 +112,7 @@ it exits. Disabling the plugin or restarting the shell removes its click loop;
 **clicking never resumes automatically**. The separate `ydotoold` input daemon
 remains running.
 
-Preferences live in `${XDG_CONFIG_HOME:-~/.config}/omautocliker.ini`. There is
+Preferences live in `${XDG_CONFIG_HOME:-~/.config}/omautoclicker.ini`. There is
 no runtime network access, telemetry, download, privileged helper or background
 clicking service outside the Omarchy shell. The counter records successful
 commands; it cannot confirm delivery to an arbitrary target application.
@@ -146,12 +146,12 @@ See [the recorded desktop results](tests/live-results.json).
 ## Remove
 
 ```sh
-omarchy-shell omautocliker stop
-omarchy plugin remove roddy.omautocliker
+omarchy-shell omautoclicker stop
+omarchy plugin remove roddy.omautoclicker
 ```
 
 Remove the two shortcut lines if you added them, then reload Hyprland.
-Preferences remain available; delete `omautocliker.ini` to reset them. The
+Preferences remain available; delete `omautoclicker.ini` to reset them. The
 `ydotool` package and daemon remain installed for other tools. Removing a group
 or udev rule created solely for this plugin is a separate administrator action.
 

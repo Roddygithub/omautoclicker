@@ -5,7 +5,7 @@ import qs.Commons as Commons
 
 Ui.BarWidget {
     id: root
-    moduleName: "roddy.omautocliker"
+    moduleName: "roddy.omautoclicker"
     readonly property var service: bar && bar.shell ? bar.shell.serviceFor(moduleName) : null
     readonly property bool opened: panel.opened
     readonly property bool popoutSwitchClosing: panel.popoutSwitchClosing

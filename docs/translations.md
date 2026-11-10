@@ -1,6 +1,6 @@
 # Translations
 
-Omautocliker follows Omarchy's selected language through `Commons.Translations`.
+Omautoclicker follows Omarchy's selected language through `Commons.Translations`.
 All 50 codes in Omarchy's `default/i18n/locales.json` have complete JSON catalogs.
 The plugin makes no translation-service or other network request at runtime.
 
